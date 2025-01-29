@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { logoutUser } from '../services/auth';
 
 const Navbar = () => {
-    const { user, setUser, userId } = useAuth();
+    const { user, setUser } = useAuth(); // Removed unused 'userId'
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -14,7 +14,7 @@ const Navbar = () => {
         setUser(null);
         navigate('/login');
       } catch (error) {
-        console.error("Error logging out:", error)
+        console.error("Error logging out:", error);
       }
     };
 
@@ -31,7 +31,7 @@ const Navbar = () => {
                      <>
                          <li><Link to="/settings">Settings</Link></li>
                          <li>
-                             <button  onClick={handleLogout} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer', color: 'white' }}>
+                             <button onClick={handleLogout} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer', color: 'white' }}>
                                  Logout
                              </button>
                          </li>
