@@ -2,3 +2,14 @@ node_modules
 build
 .env
 package-lock.json
+# Firebase configuration (use your project's settings)
+REACT_APP_FIREBASE_API_KEY="AIzaSyDRIcq9G3D6Kd6N-cDQnJtCDzVdxtWN_rQ"
+REACT_APP_FIREBASE_AUTH_DOMAIN="car-tracker-app-72e08.firebaseapp.com"
+REACT_APP_FIREBASE_PROJECT_ID="car-tracker-app-72e08"
+REACT_APP_FIREBASE_STORAGE_BUCKET="car-tracker-app-72e08.appspot.com"
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID="1038472259925"
+REACT_APP_FIREBASE_APP_ID="1:1038472259925:web:d39c4b455c1d05fb7127dc"
+REACT_APP_FIREBASE_MEASUREMENT_ID="G-F2F74WDCQQ"
+
+# Other environment variables (if needed)
+# EXAMPLE_VARIABLE=some_value
