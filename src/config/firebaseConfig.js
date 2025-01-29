@@ -2,17 +2,22 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-// Your web app's Firebase configuration
+
+// Firebase configuration provided by you
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDRIcq9G3D6Kd6N-cDQnJtCDzVdxtWN_rQ",
+  authDomain: "car-tracker-app-72e08.firebaseapp.com",
+  projectId: "car-tracker-app-72e08",
+  storageBucket: "car-tracker-app-72e08.firebasestorage.app",
+  messagingSenderId: "1038472259925",
+  appId: "1:1038472259925:web:d39c4b455c1d05fb7127dc",
+  measurementId: "G-F2F74WDCQQ"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Export Firebase services
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export default app
+export default app;
