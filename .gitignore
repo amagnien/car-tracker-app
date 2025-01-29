@@ -2,6 +2,7 @@ node_modules
 build
 .env
 package-lock.json
+
 # Firebase configuration (use your project's settings)
 REACT_APP_FIREBASE_API_KEY="AIzaSyDRIcq9G3D6Kd6N-cDQnJtCDzVdxtWN_rQ"
 REACT_APP_FIREBASE_AUTH_DOMAIN="car-tracker-app-72e08.firebaseapp.com"
