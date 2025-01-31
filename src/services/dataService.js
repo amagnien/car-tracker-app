@@ -1,6 +1,6 @@
 // src/services/dataService.js
-import { collection, addDoc, doc, updateDoc, deleteDoc, query, onSnapshot, orderBy, serverTimestamp } from 'firebase/firestore';
-import { db } from '../config/firebaseConfig';
+import { collection, addDoc, doc, updateDoc, deleteDoc, query, onSnapshot, orderBy, serverTimestamp, where } from 'firebase/firestore';
+import { db } from '../firebase';
 
 class DataServiceError extends Error {
   constructor(message, code) {
