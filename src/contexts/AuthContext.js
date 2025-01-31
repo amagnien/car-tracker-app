@@ -16,8 +16,6 @@ export const AuthProvider = ({ children }) => {
     const auth = firebaseService.getAuth();
 
     useEffect(() => {
-        if (!auth) return;
-        
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
             setLoading(false);
@@ -30,30 +28,15 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         register: async (email, password) => {
-            if (!auth) throw new Error('Auth not initialized');
-            try {
-                const { user } = await createUserWithEmailAndPassword(auth, email, password);
-                return user;
-            } catch (error) {
-                throw new Error(error.message);
-            }
+            const { user } = await createUserWithEmailAndPassword(auth, email, password);
+            return user;
         },
         login: async (email, password) => {
-            if (!auth) throw new Error('Auth not initialized');
-            try {
-                const { user } = await signInWithEmailAndPassword(auth, email, password);
-                return user;
-            } catch (error) {
-                throw new Error(error.message);
-            }
+            const { user } = await signInWithEmailAndPassword(auth, email, password);
+            return user;
         },
         logout: async () => {
-            if (!auth) throw new Error('Auth not initialized');
-            try {
-                await signOut(auth);
-            } catch (error) {
-                throw new Error(error.message);
-            }
+            await signOut(auth);
         }
     };
 
