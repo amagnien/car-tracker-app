@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getUserCars, getRecentFuel, getRecentMaintenance, getRecentExpenses, getExpenses } from '../services/dataService';
+import { getUserCars, getRecentFuel, getRecentMaintenance, getRecentExpenses, getExpenses, getCars } from '../services/dataService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DashboardStats from '../components/DashboardStats';
 import DashboardCharts from '../components/DashboardCharts';
@@ -14,7 +14,7 @@ const Dashboard = () => {
     const [recentMaintenance, setRecentMaintenance] = useState([]);
     const [recentExpenses, setRecentExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { userId } = useAuth();
+    const { user } = useAuth();
     const [stats, setStats] = useState({
         totalExpenses: 0,
         expensesTrend: 0,
@@ -25,18 +25,35 @@ const Dashboard = () => {
     });
 
     useEffect(() => {
+        if (!user?.uid) return;
+
+        const fetchCars = async () => {
+            try {
+                const cars = await getCars(user.uid);
+                setCars(cars);
+            } catch (error) {
+                console.error('Error fetching cars:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCars();
+    }, [user]);
+
+    useEffect(() => {
         const fetchDashboardData = async () => {
-            if (!userId) return;
+            if (!user?.uid) return;
 
             try {
                 // Fetch cars and their recent data
-                const unsubscribeCars = getUserCars(userId, (carsList) => {
+                const unsubscribeCars = getUserCars(user.uid, (carsList) => {
                     setCars(carsList);
                     setLoading(false);
                 });
 
                 // Fetch expenses and calculate stats
-                const unsubscribeExpenses = getExpenses(userId, null, (expenses) => {
+                const unsubscribeExpenses = getExpenses(user.uid, null, (expenses) => {
                     if (expenses) {
                         // Calculate stats from expenses
                         const total = expenses.reduce((acc, exp) => acc + exp.amount, 0);
@@ -60,7 +77,7 @@ const Dashboard = () => {
         };
 
         fetchDashboardData();
-    }, [userId]);
+    }, [user]);
 
     if (loading) {
         return <LoadingSpinner />;
