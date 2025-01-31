@@ -9,20 +9,13 @@ import Expenses from './pages/Expenses';
 import Settings from './pages/Settings';
 import { AuthProvider } from './contexts/AuthContext';
 import Toast from './components/Toast';
-import { ToastContext } from './contexts/ToastContext';
+import { ToastProvider } from './contexts/ToastContext';
 import './App.css';
 
 function App() {
-    const [toast, setToast] = useState(null);
-
-    const showToast = (message, type) => {
-        setToast({ message, type });
-        setTimeout(() => setToast(null), 3000);
-    };
-
     return (
         <AuthProvider>
-            <ToastContext.Provider value={{ showToast }}>
+            <ToastProvider>
                 <Router>
                     <div className="min-h-screen bg-gray-100">
                         <Navigation />
@@ -35,10 +28,10 @@ function App() {
                                 <Route path="/settings" element={<Settings />} />
                             </Routes>
                         </div>
+                        <Toast />
                     </div>
-                    {toast && <Toast message={toast.message} type={toast.type} />}
                 </Router>
-            </ToastContext.Provider>
+            </ToastProvider>
         </AuthProvider>
     );
 }

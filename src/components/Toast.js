@@ -5,10 +5,10 @@ import './styles/Toast.css';
 const Toast = () => {
     const { toast } = useToast();
 
-    if (!toast.show) return null;
+    if (!toast.visible) return null;
 
     return (
-        <div className={`toast ${toast.type} ${toast.show ? 'show' : ''}`}>
+        <div className={`toast ${toast.type}`}>
             {toast.message}
         </div>
     );
