@@ -15,18 +15,6 @@ import {
 import FormRow from './common/FormRow';
 import CarSelector from './CarSelector';
 
-const EXPENSE_CATEGORIES = [
-    'Insurance',
-    'Registration',
-    'Parking',
-    'Tolls',
-    'Car Wash',
-    'Accessories',
-    'Repairs',
-    'Tires',
-    'Other'
-];
-
 const ExpenseForm = () => {
     const initialFormData = {
         carId: '',
@@ -36,12 +24,6 @@ const ExpenseForm = () => {
         amount: '',
         notes: ''
     };
-
-    const [formData, setFormData] = useState(initialFormData);
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
-    const { userId } = useAuth();
-    const { showToast } = useContext(ToastContext);
 
     const expenseCategories = [
         'Fuel',
@@ -55,6 +37,12 @@ const ExpenseForm = () => {
         'Accessories',
         'Other'
     ];
+
+    const [formData, setFormData] = useState(initialFormData);
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
+    const { userId } = useAuth();
+    const { showToast } = useContext(ToastContext);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
