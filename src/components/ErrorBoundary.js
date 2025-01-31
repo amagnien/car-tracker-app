@@ -17,8 +17,8 @@ class ErrorBoundary extends React.Component {
       errorInfo: errorInfo
     });
     
-    // Log error to your error reporting service
-    console.error('Error caught by boundary:', error, errorInfo);
+    // You can also log the error to an error reporting service here
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
   render() {
@@ -26,10 +26,10 @@ class ErrorBoundary extends React.Component {
       return (
         <div className="error-boundary">
           <div className="error-content">
-            <h1>Oops! Something went wrong</h1>
-            <p>We're sorry for the inconvenience. Please try refreshing the page.</p>
+            <h1>Something went wrong</h1>
+            <p>We're sorry - something's gone wrong.</p>
             <button
-              className="button button-primary"
+              className="error-button"
               onClick={() => window.location.reload()}
             >
               Refresh Page
@@ -37,8 +37,8 @@ class ErrorBoundary extends React.Component {
             {process.env.NODE_ENV === 'development' && (
               <details className="error-details">
                 <summary>Error Details</summary>
-                <pre>{this.state.error?.toString()}</pre>
-                <pre>{this.state.errorInfo?.componentStack}</pre>
+                <pre>{this.state.error && this.state.error.toString()}</pre>
+                <pre>{this.state.errorInfo && this.state.errorInfo.componentStack}</pre>
               </details>
             )}
           </div>
