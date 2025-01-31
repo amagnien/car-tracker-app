@@ -1,4 +1,3 @@
-// src/pages/Fuel.js
 import React, { useState, useEffect, useContext } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { ToastContext } from '../contexts/ToastContext';
@@ -96,18 +95,3 @@ const FuelPage = () => {
                                             </button>
                                         </div>
                                     </div>
-                                ))
-                            )}
-                        </div>
-                    ) : (
-                        <p className="select-car-message">
-                            Please select a car to view and add fuel records.
-                        </p>
-                    )}
-                </>
-            )}
-        </div>
-    );
-};
-
-export default FuelPage;
