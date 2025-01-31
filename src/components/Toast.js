@@ -1,26 +1,15 @@
-import React, { useEffect } from 'react';
-import { useToast } from '../hooks/useToast';
+import React from 'react';
+import { useToast } from '../contexts/ToastContext';
 import './styles/Toast.css';
 
 const Toast = () => {
-    const { toast, hideToast } = useToast();
+    const { toast } = useToast();
 
-    useEffect(() => {
-        if (toast.visible) {
-            const timer = setTimeout(() => {
-                hideToast();
-            }, 3000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [toast.visible, hideToast]);
-
-    if (!toast.visible) return null;
+    if (!toast.show) return null;
 
     return (
-        <div className={`toast toast-${toast.type}`}>
-            <span className="toast-message">{toast.message}</span>
-            <button className="toast-close" onClick={hideToast}>×</button>
+        <div className={`toast ${toast.type} ${toast.show ? 'show' : ''}`}>
+            {toast.message}
         </div>
     );
 };
