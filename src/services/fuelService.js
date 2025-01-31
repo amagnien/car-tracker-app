@@ -9,7 +9,7 @@ import {
     getDocs,
     orderBy 
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db } from '../firebase';
 
 export const addFuelRecord = async (fuelData) => {
     try {
