@@ -6,6 +6,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import DashboardStats from '../components/DashboardStats';
 import DashboardCharts from '../components/DashboardCharts';
 import '../styles/Dashboard.css';
+import { ToastContext } from '../contexts/ToastContext';
 
 const Dashboard = () => {
     const [cars, setCars] = useState([]);
@@ -29,7 +30,7 @@ const Dashboard = () => {
 
             try {
                 // Fetch cars and their recent data
-                const unsubscribeCars = getCars(userId, (carsList) => {
+                const unsubscribeCars = getUserCars(userId, (carsList) => {
                     setCars(carsList);
                     setLoading(false);
                 });
