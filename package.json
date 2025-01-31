@@ -22,10 +22,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "build": "CI=false GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "clean": "rm -rf node_modules package-lock.json",
+    "clean": "rm -rf node_modules package-lock.json build",
     "reinstall": "npm run clean && npm install",
     "prebuild": "npm install",
     "postinstall": "npm install recharts@2.10.3 --legacy-peer-deps"
