@@ -7,7 +7,7 @@ import Register from '../pages/Register';
 import CarManagement from '../pages/CarManagement';
 import Analytics from '../pages/Analytics';
 import NotFound from '../pages/NotFound';
-import { ToastProvider } from '../contexts/ToastContext';
+import { ToastContext } from './contexts/ToastContext';
 
 const PrivateRoute = ({ children }) => {
     const { user } = useAuth();
@@ -16,7 +16,7 @@ const PrivateRoute = ({ children }) => {
 
 const AppRoutes = () => {
     return (
-        <ToastProvider>
+        <ToastContext>
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -37,7 +37,7 @@ const AppRoutes = () => {
                 } />
                 <Route path="*" element={<NotFound />} />
             </Routes>
-        </ToastProvider>
+        </ToastContext>
     );
 };
 
