@@ -8,6 +8,8 @@ import Expenses from './pages/Expenses';
 import Settings from './pages/Settings';
 import { AuthProvider } from './contexts/AuthContext';
 import Toast from './components/Toast';
+import AddCar from './components/AddCar';
+import Login from './components/Login';
 import './App.css';
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
                             <Route path="/maintenance" element={<Maintenance />} />
                             <Route path="/expenses" element={<Expenses />} />
                             <Route path="/settings" element={<Settings />} />
+                            <Route path="/add-car" element={<AddCar />} />
+                            <Route path="/login" element={<Login />} />
                         </Routes>
                     </div>
                     <Toast />

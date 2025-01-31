@@ -1,6 +1,6 @@
 // src/components/Navbar.js
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import './styles/Navbar.css';
@@ -48,6 +48,9 @@ const Navbar = () => {
                             <NavLink to="/analytics" className="nav-link">
                                 Analytics
                             </NavLink>
+                            <Link to="/add-car" className="nav-link">
+                                Add Car
+                            </Link>
                         </div>
 
                         <div className="navbar-actions">
