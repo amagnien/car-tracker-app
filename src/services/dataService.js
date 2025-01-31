@@ -336,5 +336,3 @@ export const updateUserSettings = async (userId, settings) => {
         throw error;
     }
 };
-
-export { updateUserSettings };
