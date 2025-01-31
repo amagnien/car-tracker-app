@@ -1,3 +1,20 @@
 [build]
-  command = "npm run build"
+  command = """
+    set -x
+    npm cache clean --force
+    rm -rf node_modules package-lock.json
+    npm install
+    npm run build
+  """
   publish = "build"
+
+[build.environment]
+  CI = "false"
+  NODE_VERSION = "18.20.6"
+  NPM_FLAGS = "--legacy-peer-deps --no-audit --no-fund"
+  DEBUG = "*"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
