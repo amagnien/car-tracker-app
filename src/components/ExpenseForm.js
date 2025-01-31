@@ -2,7 +2,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
-import { addExpense } from '../services/expenseService';
+import { addExpense } from '../services/dataService';
+import { useToast } from '../hooks/useToast';
 import './styles/ExpenseForm.css';
 
 const EXPENSE_CATEGORIES = [
@@ -16,99 +17,85 @@ const EXPENSE_CATEGORIES = [
 ];
 
 const ExpenseForm = ({ carId, onSuccess }) => {
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const { user } = useAuth();
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
+    const { showToast } = useToast();
 
     const onSubmit = async (data) => {
         try {
-            await addExpense({
+            await addExpense(user.uid, carId, {
                 ...data,
-                carId,
-                userId: user.uid,
-                amount: parseFloat(data.amount),
-                date: new Date(data.date).toISOString(),
-                createdAt: new Date().toISOString()
+                amount: Number(data.amount),
+                date: new Date(data.date).toISOString()
             });
+            showToast('Expense added successfully', 'success');
             reset();
-            onSuccess?.();
+            if (onSuccess) onSuccess();
         } catch (error) {
             console.error('Error adding expense:', error);
-            throw error;
+            showToast('Error adding expense', 'error');
         }
     };
 
     return (
-        <form className="expense-form" onSubmit={handleSubmit(onSubmit)}>
-            <div className="form-grid">
-                <div className="form-group">
-                    <label htmlFor="description">Description</label>
-                    <input
-                        id="description"
-                        type="text"
-                        {...register('description', { required: 'Description is required' })}
-                        className={errors.description ? 'error' : ''}
-                    />
-                    {errors.description && <span className="error-message">{errors.description.message}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="category">Category</label>
-                    <select
-                        id="category"
-                        {...register('category', { required: 'Category is required' })}
-                        className={errors.category ? 'error' : ''}
-                    >
-                        <option value="">Select category</option>
-                        {EXPENSE_CATEGORIES.map(category => (
-                            <option key={category} value={category}>{category}</option>
-                        ))}
-                    </select>
-                    {errors.category && <span className="error-message">{errors.category.message}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="amount">Amount ($)</label>
-                    <input
-                        id="amount"
-                        type="number"
-                        step="0.01"
-                        {...register('amount', {
-                            required: 'Amount is required',
-                            min: { value: 0.01, message: 'Amount must be greater than 0' }
-                        })}
-                        className={errors.amount ? 'error' : ''}
-                    />
-                    {errors.amount && <span className="error-message">{errors.amount.message}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="date">Date</label>
-                    <input
-                        id="date"
-                        type="date"
-                        {...register('date', { required: 'Date is required' })}
-                        className={errors.date ? 'error' : ''}
-                    />
-                    {errors.date && <span className="error-message">{errors.date.message}</span>}
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="expense-form">
+            <div className="form-group">
+                <label htmlFor="description">Description</label>
+                <input
+                    id="description"
+                    type="text"
+                    {...register('description', { required: 'Description is required' })}
+                />
+                {errors.description && <span className="error">{errors.description.message}</span>}
             </div>
 
             <div className="form-group">
-                <label htmlFor="notes">Notes</label>
+                <label htmlFor="amount">Amount</label>
+                <input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    {...register('amount', { 
+                        required: 'Amount is required',
+                        min: { value: 0.01, message: 'Amount must be greater than 0' }
+                    })}
+                />
+                {errors.amount && <span className="error">{errors.amount.message}</span>}
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="category">Category</label>
+                <select
+                    id="category"
+                    {...register('category', { required: 'Category is required' })}
+                >
+                    <option value="">Select a category</option>
+                    {EXPENSE_CATEGORIES.map(category => (
+                        <option key={category} value={category}>{category}</option>
+                    ))}
+                </select>
+                {errors.category && <span className="error">{errors.category.message}</span>}
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="date">Date</label>
+                <input
+                    id="date"
+                    type="date"
+                    {...register('date', { required: 'Date is required' })}
+                />
+                {errors.date && <span className="error">{errors.date.message}</span>}
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="notes">Notes (optional)</label>
                 <textarea
                     id="notes"
                     {...register('notes')}
-                    rows="3"
                 />
             </div>
 
-            <button 
-                type="submit" 
-                className="submit-button"
-                disabled={isSubmitting}
-            >
-                {isSubmitting ? 'Adding Expense...' : 'Add Expense'}
-            </button>
+            <button type="submit" className="submit-button">Add Expense</button>
         </form>
     );
 };
