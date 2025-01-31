@@ -9,9 +9,8 @@ import Expenses from './pages/Expenses';
 import Settings from './pages/Settings';
 import { AuthProvider } from './contexts/AuthContext';
 import Toast from './components/Toast';
+import { ToastContext } from './contexts/ToastContext';
 import './App.css';
-
-export const ToastContext = createContext();
 
 function App() {
     const [toast, setToast] = useState(null);

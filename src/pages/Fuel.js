@@ -1,7 +1,7 @@
 // src/pages/Fuel.js
 import React, { useState, useEffect, useContext } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { ToastContext } from '../App';
+import { ToastContext } from '../contexts/ToastContext';
 import { getFuelRecords, deleteFuelRecord } from '../services/dataService';
 import FuelForm from '../components/FuelForm';
 import CarSelector from '../components/CarSelector';

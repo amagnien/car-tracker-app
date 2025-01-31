@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { useToast } from '../contexts/ToastContext';
+import { ToastContext } from '../contexts/ToastContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import CarForm from '../components/CarForm';
 import { getUserCars, deleteCar } from '../services/dataService';
