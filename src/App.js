@@ -6,7 +6,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import AppRoutes from './routes/AppRoutes';
 import Navigation from './components/Navigation';
 import Toast from './components/Toast';
-import './styles/App.css';
+import './App.css';
 
 const App = () => {
     return (
