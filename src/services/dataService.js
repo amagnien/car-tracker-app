@@ -234,4 +234,12 @@ export const getFuel = (userId, carId, callback, errorCallback) => {
     }
 };
 
-export const deleteFuel = async (userId, carId, fuelId) =>
+export const deleteFuel = async (userId, carId, fuelId) => {
+    try {
+        const fuelRef = doc(db, 'users', userId, 'cars', carId, 'fuel', fuelId);
+        await deleteDoc(fuelRef);
+    } catch (error) {
+        console.error('Error deleting fuel record:', error);
+        throw error;
+    }
+};
