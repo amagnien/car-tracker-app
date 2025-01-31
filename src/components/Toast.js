@@ -14,4 +14,4 @@ const Toast = () => {
     );
 };
 
-export default Toast; 
+export default Toast;

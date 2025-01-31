@@ -54,37 +54,50 @@ const FuelPage = () => {
     return (
         <div className="fuel-page">
             <h1>Fuel Records</h1>
-            <CarSelector onSelectCar={setSelectedCarId} />
+            
+            <div className="car-selector-container">
+                <CarSelector
+                    selectedCarId={selectedCarId}
+                    onCarSelect={setSelectedCarId}
+                />
+            </div>
+
+            {selectedCarId && <FuelForm carId={selectedCarId} />}
+
             {loading ? (
                 <LoadingSpinner />
             ) : (
                 <>
                     {selectedCarId ? (
-                        <div className="fuel-content">
-                            <FuelForm carId={selectedCarId} />
-                            <div className="fuel-records">
-                                {fuelRecords.length === 0 ? (
-                                    <p>No fuel records found.</p>
-                                ) : (
-                                    fuelRecords.map((record) => (
-                                        <div key={record.id} className="fuel-record">
-                                            <div className="fuel-details">
-                                                <p>Date: {new Date(record.date).toLocaleDateString()}</p>
-                                                <p>Liters: {record.liters}</p>
-                                                <p>Total Cost: ${record.totalCost}</p>
+                        <div className="fuel-list">
+                            {fuelRecords.length === 0 ? (
+                                <p className="no-fuel">No fuel records yet.</p>
+                            ) : (
+                                fuelRecords.map(record => (
+                                    <div key={record.id} className="fuel-card">
+                                        <div className="fuel-info">
+                                            <div className="fuel-header">
+                                                <h3>{record.date}</h3>
+                                                <span className="fuel-cost">
+                                                    ${record.totalCost.toFixed(2)}
+                                                </span>
                                             </div>
-                                            <div className="fuel-actions">
-                                                <button
-                                                    className="button button-danger"
-                                                    onClick={() => handleDeleteFuelRecord(record.id)}
-                                                >
-                                                    Delete
-                                                </button>
+                                            <div className="fuel-details">
+                                                <p>Liters: {record.liters}</p>
+                                                <p>Price per liter: ${record.pricePerLiter.toFixed(2)}</p>
                                             </div>
                                         </div>
-                                    ))
-                                )}
-                            </div>
+                                        <div className="fuel-actions">
+                                            <button
+                                                className="button button-danger"
+                                                onClick={() => handleDeleteFuelRecord(record.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     ) : (
                         <p className="select-car-message">

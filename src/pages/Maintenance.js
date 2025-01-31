@@ -1,4 +1,3 @@
-// src/pages/Maintenance.js
 import React, { useState, useEffect, useContext } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { ToastContext } from '../contexts/ToastContext';

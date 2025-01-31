@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Dashboard from './pages/Dashboard';
@@ -8,7 +8,6 @@ import Maintenance from './pages/Maintenance';
 import Expenses from './pages/Expenses';
 import Settings from './pages/Settings';
 import { AuthProvider } from './contexts/AuthContext';
-import Toast from './components/Toast';
 import { ToastProvider } from './contexts/ToastContext';
 import './App.css';
 
@@ -28,7 +27,6 @@ function App() {
                                 <Route path="/settings" element={<Settings />} />
                             </Routes>
                         </div>
-                        <Toast />
                     </div>
                 </Router>
             </ToastProvider>
