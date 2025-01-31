@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { getUserSettings } from '../services/userService';
-import { updateUserSettings } from '../services/userService';
+import { updateUserSettings } from '../services/dataService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { ToastContext } from '../contexts/ToastContext';
 
