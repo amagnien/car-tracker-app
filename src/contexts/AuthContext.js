@@ -5,7 +5,7 @@ import {
     signOut,
     onAuthStateChanged
 } from 'firebase/auth';
-import firebaseService from '../services/firebase';
+import { auth } from '../firebase';
 
 // Export the context so it can be imported directly
 export const AuthContext = createContext(null);
@@ -13,7 +13,6 @@ export const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const auth = firebaseService.getAuth();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -22,7 +21,7 @@ export const AuthProvider = ({ children }) => {
         });
 
         return () => unsubscribe();
-    }, [auth]);
+    }, []);
 
     const value = {
         user,
