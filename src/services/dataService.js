@@ -9,7 +9,8 @@ import {
     orderBy, 
     serverTimestamp, 
     where, 
-    getDocs 
+    getDocs, 
+    getDoc 
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -310,8 +311,27 @@ export const deleteFuelRecord = async (userId, carId, fuelId) => {
     }
 };
 
-const updateCar = async (userId, carId, updatedData) => {
+export const getUserSettings = async (userId) => {
     try {
+        if (!userId) throw new DataServiceError('User not authenticated', 'AUTH_REQUIRED');
+        
+        const settingsRef = doc(db, 'users', userId, 'settings', 'userSettings');
+        const snapshot = await getDoc(settingsRef);
+        
+        if (snapshot.exists()) {
+            return snapshot.data();
+        } else {
+            throw new DataServiceError('User settings not found', 'SETTINGS_NOT_FOUND');
+        }
+    } catch (error) {
+        throw new DataServiceError('Failed to fetch user settings', 'FETCH_SETTINGS_FAILED');
+    }
+};
+
+export const updateCar = async (userId, carId, updatedData) => {
+    try {
+        if (!userId || !carId) throw new DataServiceError('Missing required parameters', 'PARAMS_REQUIRED');
+        
         const carRef = doc(db, `users/${userId}/cars`, carId);
         await updateDoc(carRef, updatedData);
     } catch (error) {

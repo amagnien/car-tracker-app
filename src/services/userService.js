@@ -1,6 +1,7 @@
 import { db } from '../config/firebase';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { getAuth, updateProfile, updatePassword } from 'firebase/auth';
+import { getUserSettings } from './dataService';
 
 export const getUserSettings = async (userId) => {
     try {
