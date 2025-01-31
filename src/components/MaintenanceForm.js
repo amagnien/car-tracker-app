@@ -2,7 +2,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
-import { addMaintenance } from '../services/maintenanceService';
+import { addMaintenanceRecord } from '../services/dataService';
 import './styles/MaintenanceForm.css';
 
 const SERVICE_TYPES = [
@@ -21,7 +21,7 @@ const MaintenanceForm = ({ carId, onSuccess }) => {
 
     const onSubmit = async (data) => {
         try {
-            await addMaintenance({
+            await addMaintenanceRecord({
                 ...data,
                 carId,
                 userId: user.uid,
