@@ -1,9 +1,9 @@
 // src/App.js
 import React, { Suspense } from 'react';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { ToastProvider } from './context/ToastContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { ToastProvider } from './contexts/ToastContext';
 import Navbar from './components/Navbar';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
