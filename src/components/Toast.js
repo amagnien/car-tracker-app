@@ -1,21 +1,28 @@
 import React, { useEffect } from 'react';
-import '../styles/Toast.css';
+import { useToast } from '../hooks/useToast';
+import './styles/Toast.css';
 
-const Toast = ({ message, type = 'info', onClose, duration = 3000 }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, duration);
+const Toast = () => {
+    const { toast, hideToast } = useToast();
 
-    return () => clearTimeout(timer);
-  }, [duration, onClose]);
+    useEffect(() => {
+        if (toast.visible) {
+            const timer = setTimeout(() => {
+                hideToast();
+            }, 3000);
 
-  return (
-    <div className={`toast ${type}`}>
-      <span className="message">{message}</span>
-      <button className="close-button" onClick={onClose}>×</button>
-    </div>
-  );
+            return () => clearTimeout(timer);
+        }
+    }, [toast.visible, hideToast]);
+
+    if (!toast.visible) return null;
+
+    return (
+        <div className={`toast toast-${toast.type}`}>
+            <span className="toast-message">{toast.message}</span>
+            <button className="toast-close" onClick={hideToast}>×</button>
+        </div>
+    );
 };
 
 export default Toast; 

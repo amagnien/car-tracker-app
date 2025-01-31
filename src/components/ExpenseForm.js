@@ -1,190 +1,115 @@
 // src/components/ExpenseForm.js
-import React, { useState, useContext } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
-import { ToastContext } from '../App';
-import { addExpense } from '../services/dataService';
-import {
-    FormCard,
-    FormGroup,
-    FormLabel,
-    FormInput,
-    FormSelect,
-    FormTextarea,
-    FormButton
-} from './common/Form';
-import FormRow from './common/FormRow';
-import CarSelector from './CarSelector';
+import { addExpense } from '../services/expenseService';
+import './styles/ExpenseForm.css';
 
-const ExpenseForm = ({ carId }) => {
-    const initialFormData = {
-        carId: carId || '',
-        date: new Date().toISOString().split('T')[0],
-        category: '',
-        description: '',
-        amount: '',
-        notes: ''
-    };
+const EXPENSE_CATEGORIES = [
+    'Fuel',
+    'Maintenance',
+    'Insurance',
+    'Registration',
+    'Repairs',
+    'Accessories',
+    'Other'
+];
 
-    const expenseCategories = [
-        'Fuel',
-        'Insurance',
-        'Registration',
-        'Maintenance',
-        'Repairs',
-        'Parking',
-        'Tolls',
-        'Car Wash',
-        'Accessories',
-        'Other'
-    ];
+const ExpenseForm = ({ carId, onSuccess }) => {
+    const { user } = useAuth();
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
 
-    const [formData, setFormData] = useState(initialFormData);
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
-    const { userId } = useAuth();
-    const { showToast } = useContext(ToastContext);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-        
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    const validateForm = () => {
-        const newErrors = {};
-        if (!formData.carId) newErrors.carId = 'Please select a car';
-        if (!formData.category) newErrors.category = 'Category is required';
-        if (!formData.description) newErrors.description = 'Description is required';
-        if (!formData.amount || parseFloat(formData.amount) <= 0) {
-            newErrors.amount = 'Please enter a valid amount';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!validateForm()) return;
-
-        setLoading(true);
+    const onSubmit = async (data) => {
         try {
-            const expenseData = {
-                ...formData,
-                amount: parseFloat(formData.amount) || 0,
-                date: new Date(formData.date).toISOString()
-            };
-
-            await addExpense(expenseData, userId);
-            showToast('Expense added successfully', 'success');
-            setFormData(initialFormData);
+            await addExpense({
+                ...data,
+                carId,
+                userId: user.uid,
+                amount: parseFloat(data.amount),
+                date: new Date(data.date).toISOString(),
+                createdAt: new Date().toISOString()
+            });
+            reset();
+            onSuccess?.();
         } catch (error) {
             console.error('Error adding expense:', error);
-            showToast(error.message || 'Failed to add expense', 'error');
-        } finally {
-            setLoading(false);
+            throw error;
         }
     };
 
     return (
-        <FormCard title="Add Expense">
-            <form onSubmit={handleSubmit}>
-                <FormGroup>
-                    <FormLabel htmlFor="carId" required>Select Car</FormLabel>
-                    <CarSelector
-                        selectedCarId={formData.carId}
-                        onCarSelect={(carId) => {
-                            setFormData(prev => ({ ...prev, carId }));
-                            if (errors.carId) {
-                                setErrors(prev => ({ ...prev, carId: '' }));
-                            }
-                        }}
-                        error={errors.carId}
-                    />
-                </FormGroup>
-
-                <FormRow>
-                    <FormGroup>
-                        <FormLabel htmlFor="date" required>Date</FormLabel>
-                        <FormInput
-                            type="date"
-                            id="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                        />
-                    </FormGroup>
-
-                    <FormGroup>
-                        <FormLabel htmlFor="category" required>Category</FormLabel>
-                        <FormSelect
-                            id="category"
-                            name="category"
-                            value={formData.category}
-                            onChange={handleChange}
-                            error={errors.category}
-                        >
-                            <option value="">Select category</option>
-                            {expenseCategories.map(category => (
-                                <option key={category} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </FormSelect>
-                    </FormGroup>
-                </FormRow>
-
-                <FormGroup>
-                    <FormLabel htmlFor="description" required>Description</FormLabel>
-                    <FormInput
-                        type="text"
+        <form className="expense-form" onSubmit={handleSubmit(onSubmit)}>
+            <div className="form-grid">
+                <div className="form-group">
+                    <label htmlFor="description">Description</label>
+                    <input
                         id="description"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        placeholder="Brief description of the expense"
-                        error={errors.description}
+                        type="text"
+                        {...register('description', { required: 'Description is required' })}
+                        className={errors.description ? 'error' : ''}
                     />
-                </FormGroup>
+                    {errors.description && <span className="error-message">{errors.description.message}</span>}
+                </div>
 
-                <FormGroup>
-                    <FormLabel htmlFor="amount" required>Amount</FormLabel>
-                    <FormInput
-                        type="number"
+                <div className="form-group">
+                    <label htmlFor="category">Category</label>
+                    <select
+                        id="category"
+                        {...register('category', { required: 'Category is required' })}
+                        className={errors.category ? 'error' : ''}
+                    >
+                        <option value="">Select category</option>
+                        {EXPENSE_CATEGORIES.map(category => (
+                            <option key={category} value={category}>{category}</option>
+                        ))}
+                    </select>
+                    {errors.category && <span className="error-message">{errors.category.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="amount">Amount ($)</label>
+                    <input
                         id="amount"
-                        name="amount"
-                        value={formData.amount}
-                        onChange={handleChange}
-                        placeholder="0.00"
+                        type="number"
                         step="0.01"
-                        min="0"
-                        error={errors.amount}
+                        {...register('amount', {
+                            required: 'Amount is required',
+                            min: { value: 0.01, message: 'Amount must be greater than 0' }
+                        })}
+                        className={errors.amount ? 'error' : ''}
                     />
-                </FormGroup>
+                    {errors.amount && <span className="error-message">{errors.amount.message}</span>}
+                </div>
 
-                <FormGroup>
-                    <FormLabel htmlFor="notes">Notes</FormLabel>
-                    <FormTextarea
-                        id="notes"
-                        name="notes"
-                        value={formData.notes}
-                        onChange={handleChange}
-                        placeholder="Additional notes about the expense..."
-                        rows="3"
+                <div className="form-group">
+                    <label htmlFor="date">Date</label>
+                    <input
+                        id="date"
+                        type="date"
+                        {...register('date', { required: 'Date is required' })}
+                        className={errors.date ? 'error' : ''}
                     />
-                </FormGroup>
+                    {errors.date && <span className="error-message">{errors.date.message}</span>}
+                </div>
+            </div>
 
-                <FormButton type="submit" loading={loading}>
-                    Add Expense
-                </FormButton>
-            </form>
-        </FormCard>
+            <div className="form-group">
+                <label htmlFor="notes">Notes</label>
+                <textarea
+                    id="notes"
+                    {...register('notes')}
+                    rows="3"
+                />
+            </div>
+
+            <button 
+                type="submit" 
+                className="submit-button"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? 'Adding Expense...' : 'Add Expense'}
+            </button>
+        </form>
     );
 };
 

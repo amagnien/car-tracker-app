@@ -1,261 +1,129 @@
 // src/components/MaintenanceForm.js
-import React, { useState, useContext } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
-import { ToastContext } from '../App';
-import { addMaintenance } from '../services/dataService';
-import {
-    FormCard,
-    FormGroup,
-    FormRow,
-    FormLabel,
-    FormInput,
-    FormSelect,
-    FormTextarea,
-    FormButton
-} from './common/Form';
-import { MAINTENANCE_PARTS } from '../utils/constants';
-import CarSelector from './CarSelector';
+import { addMaintenance } from '../services/maintenanceService';
+import './styles/MaintenanceForm.css';
 
-const MaintenanceForm = () => {
-    const initialFormData = {
-        carId: '',
-        date: new Date().toISOString().split('T')[0],
-        serviceType: '',
-        parts: [],
-        totalCost: 0,
-        mileage: '',
-        serviceProvider: '',
-        notes: ''
-    };
+const SERVICE_TYPES = [
+    'Oil Change',
+    'Tire Rotation',
+    'Brake Service',
+    'Air Filter',
+    'Battery',
+    'Transmission',
+    'Other'
+];
 
-    const [formData, setFormData] = useState(initialFormData);
-    const [newPart, setNewPart] = useState({ partId: '', cost: '' });
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
-    const { userId } = useAuth();
-    const { showToast } = useContext(ToastContext);
+const MaintenanceForm = ({ carId, onSuccess }) => {
+    const { user } = useAuth();
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-        
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    const calculateTotalCost = (parts) => {
-        return parts.reduce((sum, part) => {
-            const cost = parseFloat(part.cost) || 0;
-            return sum + cost;
-        }, 0);
-    };
-
-    const handleAddPart = () => {
-        if (!newPart.partId || !newPart.cost) return;
-
-        const selectedPart = MAINTENANCE_PARTS.find(p => p.id === newPart.partId);
-        const partCost = parseFloat(newPart.cost) || 0;
-
-        const updatedParts = [
-            ...formData.parts,
-            {
-                id: newPart.partId,
-                name: selectedPart.name,
-                cost: partCost
-            }
-        ];
-
-        const totalCost = calculateTotalCost(updatedParts);
-
-        setFormData(prev => ({
-            ...prev,
-            parts: updatedParts,
-            totalCost
-        }));
-
-        setNewPart({ partId: '', cost: '' });
-    };
-
-    const handleRemovePart = (partId) => {
-        const updatedParts = formData.parts.filter(part => part.id !== partId);
-        const totalCost = calculateTotalCost(updatedParts);
-
-        setFormData(prev => ({
-            ...prev,
-            parts: updatedParts,
-            totalCost
-        }));
-    };
-
-    const validateForm = () => {
-        const newErrors = {};
-        if (!formData.carId) newErrors.carId = 'Please select a car';
-        if (!formData.parts.length) newErrors.parts = 'At least one part is required';
-        if (!formData.mileage) newErrors.mileage = 'Mileage is required';
-        if (parseFloat(formData.mileage) <= 0) newErrors.mileage = 'Mileage must be greater than 0';
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!validateForm()) return;
-
-        setLoading(true);
+    const onSubmit = async (data) => {
         try {
             await addMaintenance({
-                ...formData,
-                mileage: parseFloat(formData.mileage),
-                totalCost: parseFloat(formData.totalCost)
-            }, userId);
-            
-            showToast('Maintenance record added successfully', 'success');
-            setFormData(prev => ({
-                ...prev,
-                parts: [],
-                totalCost: 0,
-                mileage: '',
-                serviceProvider: '',
-                notes: ''
-            }));
+                ...data,
+                carId,
+                userId: user.uid,
+                cost: parseFloat(data.cost),
+                mileage: parseFloat(data.mileage),
+                date: new Date(data.date).toISOString(),
+                createdAt: new Date().toISOString()
+            });
+            reset();
+            onSuccess?.();
         } catch (error) {
-            showToast(error.message, 'error');
-        } finally {
-            setLoading(false);
+            console.error('Error adding maintenance record:', error);
+            throw error;
         }
     };
 
     return (
-        <FormCard title="Add Maintenance Record">
-            <form onSubmit={handleSubmit}>
-                <FormGroup>
-                    <FormLabel htmlFor="carId" required>Select Car</FormLabel>
-                    <CarSelector
-                        selectedCarId={formData.carId}
-                        onCarSelect={(carId) => {
-                            setFormData(prev => ({ ...prev, carId }));
-                            if (errors.carId) {
-                                setErrors(prev => ({ ...prev, carId: '' }));
-                            }
-                        }}
-                        error={errors.carId}
-                    />
-                </FormGroup>
-
-                <FormRow>
-                    <FormGroup>
-                        <FormLabel htmlFor="date" required>Date</FormLabel>
-                        <FormInput
-                            type="date"
-                            id="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <FormLabel htmlFor="mileage" required>Current Mileage (km)</FormLabel>
-                        <FormInput
-                            type="number"
-                            id="mileage"
-                            name="mileage"
-                            value={formData.mileage}
-                            onChange={handleChange}
-                            min="0"
-                            placeholder="e.g., 50000"
-                            error={errors.mileage}
-                        />
-                    </FormGroup>
-                </FormRow>
-
-                <FormGroup>
-                    <FormLabel>Parts and Costs</FormLabel>
-                    <div className="parts-input-container">
-                        <FormSelect
-                            value={newPart.partId}
-                            onChange={(e) => setNewPart(prev => ({ ...prev, partId: e.target.value }))}
-                        >
-                            <option value="">Select part</option>
-                            {MAINTENANCE_PARTS.map(part => (
-                                <option key={part.id} value={part.id}>
-                                    {part.name}
-                                </option>
-                            ))}
-                        </FormSelect>
-                        <FormInput
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={newPart.cost}
-                            onChange={(e) => setNewPart(prev => ({ ...prev, cost: e.target.value }))}
-                            placeholder="Cost"
-                        />
-                        <button
-                            type="button"
-                            className="button button-secondary"
-                            onClick={handleAddPart}
-                        >
-                            Add Part
-                        </button>
-                    </div>
-                    {errors.parts && <span className="form-error">{errors.parts}</span>}
-                </FormGroup>
-
-                {formData.parts.length > 0 && (
-                    <div className="parts-list">
-                        {formData.parts.map(part => (
-                            <div key={part.id} className="part-item">
-                                <span>{part.name}</span>
-                                <span>${(parseFloat(part.cost) || 0).toFixed(2)}</span>
-                                <button
-                                    type="button"
-                                    className="button button-danger button-small"
-                                    onClick={() => handleRemovePart(part.id)}
-                                >
-                                    Remove
-                                </button>
-                            </div>
+        <form className="maintenance-form" onSubmit={handleSubmit(onSubmit)}>
+            <div className="form-grid">
+                <div className="form-group">
+                    <label htmlFor="serviceType">Service Type</label>
+                    <select
+                        id="serviceType"
+                        {...register('serviceType', { required: 'Service type is required' })}
+                        className={errors.serviceType ? 'error' : ''}
+                    >
+                        <option value="">Select service type</option>
+                        {SERVICE_TYPES.map(type => (
+                            <option key={type} value={type}>{type}</option>
                         ))}
-                        <div className="total-cost">
-                            <strong>Total Cost: ${(formData.totalCost || 0).toFixed(2)}</strong>
-                        </div>
-                    </div>
-                )}
+                    </select>
+                    {errors.serviceType && <span className="error-message">{errors.serviceType.message}</span>}
+                </div>
 
-                <FormGroup>
-                    <FormLabel htmlFor="serviceProvider">Service Provider</FormLabel>
-                    <FormInput
-                        type="text"
+                <div className="form-group">
+                    <label htmlFor="date">Service Date</label>
+                    <input
+                        id="date"
+                        type="date"
+                        {...register('date', { required: 'Date is required' })}
+                        className={errors.date ? 'error' : ''}
+                    />
+                    {errors.date && <span className="error-message">{errors.date.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="cost">Cost ($)</label>
+                    <input
+                        id="cost"
+                        type="number"
+                        step="0.01"
+                        {...register('cost', {
+                            required: 'Cost is required',
+                            min: { value: 0, message: 'Cost must be positive' }
+                        })}
+                        className={errors.cost ? 'error' : ''}
+                    />
+                    {errors.cost && <span className="error-message">{errors.cost.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="mileage">Mileage at Service (km)</label>
+                    <input
+                        id="mileage"
+                        type="number"
+                        step="0.1"
+                        {...register('mileage', {
+                            required: 'Mileage is required',
+                            min: { value: 0, message: 'Mileage must be positive' }
+                        })}
+                        className={errors.mileage ? 'error' : ''}
+                    />
+                    {errors.mileage && <span className="error-message">{errors.mileage.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="serviceProvider">Service Provider</label>
+                    <input
                         id="serviceProvider"
-                        name="serviceProvider"
-                        value={formData.serviceProvider}
-                        onChange={handleChange}
-                        placeholder="e.g., AutoCare Service Center"
+                        type="text"
+                        {...register('serviceProvider')}
                     />
-                </FormGroup>
+                </div>
+            </div>
 
-                <FormGroup>
-                    <FormLabel htmlFor="notes">Notes</FormLabel>
-                    <FormTextarea
-                        id="notes"
-                        name="notes"
-                        value={formData.notes}
-                        onChange={handleChange}
-                        placeholder="Additional notes about the maintenance..."
-                        rows="3"
-                    />
-                </FormGroup>
+            <div className="form-group">
+                <label htmlFor="notes">Notes</label>
+                <textarea
+                    id="notes"
+                    {...register('notes')}
+                    rows="3"
+                />
+            </div>
 
-                <FormButton type="submit" loading={loading}>
-                    Add Maintenance Record
-                </FormButton>
-            </form>
-        </FormCard>
+            <button 
+                type="submit" 
+                className="submit-button"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? 'Adding Maintenance Record...' : 'Add Maintenance Record'}
+            </button>
+        </form>
     );
 };
 

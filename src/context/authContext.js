@@ -1,35 +1,63 @@
-import React, {createContext, useState, useEffect} from 'react';
-import { getCurrentUser } from '../services/auth';
+import React, { createContext, useState, useEffect } from 'react';
+import { auth } from '../services/firebase';
+import { 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword,
+    signOut as firebaseSignOut,
+    onAuthStateChanged,
+    updateProfile
+} from 'firebase/auth';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export const AuthContext = createContext(null);
 
-export const AuthProvider = ({children}) => {
-  const [user, setUser] = useState(null);
-    const [userId, setUserId] = useState(null);
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-      const fetchUser = async () => {
-        const currentUser = await getCurrentUser();
-        if(currentUser) {
-          setUser(currentUser);
-            setUserId(currentUser.uid);
-        }
-        setLoading(false)
-      }
-        fetchUser()
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setUser(user);
+            setLoading(false);
+        });
+
+        return unsubscribe;
     }, []);
 
-  const authData = {
-    user,
-      userId,
-      setUser,
-      loading
-  };
+    const signUp = async (email, password, name) => {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, { displayName: name });
+            return userCredential.user;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    };
 
-  return (
-      <AuthContext.Provider value={authData}>
-        {loading ? <div>Loading ...</div> :  children}
-    </AuthContext.Provider>
-  )
-}
+    const signIn = async (email, password) => {
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            return userCredential.user;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    };
+
+    const signOut = async () => {
+        try {
+            await firebaseSignOut(auth);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    };
+
+    if (loading) {
+        return <LoadingSpinner />;
+    }
+
+    return (
+        <AuthContext.Provider value={{ user, signUp, signIn, signOut }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};

@@ -1,172 +1,122 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
-import { ToastContext } from '../App';
-import { addCar } from '../services/dataService';
-import {
-    FormCard,
-    FormGroup,
-    FormRow,
-    FormLabel,
-    FormInput,
-    FormButton
-} from './common/Form';
+import { addCar } from '../services/carService';
+import './styles/CarForm.css';
 
 const CarForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
-        make: '',
-        model: '',
-        year: new Date().getFullYear(),
-        licensePlate: '',
-        currentMileage: '',
-        imageUrl: ''
-    });
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
-    const { userId } = useAuth();
-    const { showToast } = useContext(ToastContext);
+    const { user } = useAuth();
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-        // Clear error when user starts typing
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    const validateForm = () => {
-        const newErrors = {};
-        const currentYear = new Date().getFullYear();
-        
-        if (!formData.make) newErrors.make = 'Make is required';
-        if (!formData.model) newErrors.model = 'Model is required';
-        if (!formData.licensePlate) newErrors.licensePlate = 'License plate is required';
-        if (!formData.currentMileage) newErrors.currentMileage = 'Current mileage is required';
-        if (formData.currentMileage < 0) newErrors.currentMileage = 'Mileage cannot be negative';
-        if (formData.year < 1900 || formData.year > currentYear + 1) {
-            newErrors.year = `Year must be between 1900 and ${currentYear + 1}`;
-        }
-        
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!validateForm()) return;
-
-        setLoading(true);
+    const onSubmit = async (data) => {
         try {
-            await addCar(formData, userId);
-            showToast('Car added successfully', 'success');
-            setFormData({
-                make: '',
-                model: '',
-                year: new Date().getFullYear(),
-                licensePlate: '',
-                currentMileage: '',
-                imageUrl: ''
+            await addCar({
+                ...data,
+                userId: user.uid,
+                createdAt: new Date().toISOString(),
+                currentMileage: parseFloat(data.currentMileage)
             });
-            if (onSuccess) onSuccess();
+            reset();
+            onSuccess?.();
         } catch (error) {
-            showToast(error.message, 'error');
-        } finally {
-            setLoading(false);
+            console.error('Error adding car:', error);
+            throw error;
         }
     };
 
     return (
-        <FormCard title="Add New Car">
-            <form onSubmit={handleSubmit}>
-                <FormRow>
-                    <FormGroup>
-                        <FormLabel htmlFor="make" required>Make</FormLabel>
-                        <FormInput
-                            type="text"
-                            id="make"
-                            name="make"
-                            value={formData.make}
-                            onChange={handleChange}
-                            placeholder="e.g., Toyota"
-                            error={errors.make}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <FormLabel htmlFor="model" required>Model</FormLabel>
-                        <FormInput
-                            type="text"
-                            id="model"
-                            name="model"
-                            value={formData.model}
-                            onChange={handleChange}
-                            placeholder="e.g., Camry"
-                            error={errors.model}
-                        />
-                    </FormGroup>
-                </FormRow>
+        <form className="car-form" onSubmit={handleSubmit(onSubmit)}>
+            <div className="form-grid">
+                <div className="form-group">
+                    <label htmlFor="make">Make</label>
+                    <input
+                        id="make"
+                        type="text"
+                        {...register('make', { required: 'Make is required' })}
+                        className={errors.make ? 'error' : ''}
+                    />
+                    {errors.make && <span className="error-message">{errors.make.message}</span>}
+                </div>
 
-                <FormRow>
-                    <FormGroup>
-                        <FormLabel htmlFor="year">Year</FormLabel>
-                        <FormInput
-                            type="number"
-                            id="year"
-                            name="year"
-                            value={formData.year}
-                            onChange={handleChange}
-                            min="1900"
-                            max={new Date().getFullYear() + 1}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <FormLabel htmlFor="licensePlate" required>License Plate</FormLabel>
-                        <FormInput
-                            type="text"
-                            id="licensePlate"
-                            name="licensePlate"
-                            value={formData.licensePlate}
-                            onChange={handleChange}
-                            placeholder="e.g., ABC123"
-                            error={errors.licensePlate}
-                        />
-                    </FormGroup>
-                </FormRow>
+                <div className="form-group">
+                    <label htmlFor="model">Model</label>
+                    <input
+                        id="model"
+                        type="text"
+                        {...register('model', { required: 'Model is required' })}
+                        className={errors.model ? 'error' : ''}
+                    />
+                    {errors.model && <span className="error-message">{errors.model.message}</span>}
+                </div>
 
-                <FormRow>
-                    <FormGroup>
-                        <FormLabel htmlFor="currentMileage" required>Current Mileage (km)</FormLabel>
-                        <FormInput
-                            type="number"
-                            id="currentMileage"
-                            name="currentMileage"
-                            value={formData.currentMileage}
-                            onChange={handleChange}
-                            min="0"
-                            placeholder="e.g., 50000"
-                            error={errors.currentMileage}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <FormLabel htmlFor="imageUrl">Image URL</FormLabel>
-                        <FormInput
-                            type="url"
-                            id="imageUrl"
-                            name="imageUrl"
-                            value={formData.imageUrl}
-                            onChange={handleChange}
-                            placeholder="https://example.com/car-image.jpg"
-                        />
-                    </FormGroup>
-                </FormRow>
+                <div className="form-group">
+                    <label htmlFor="year">Year</label>
+                    <input
+                        id="year"
+                        type="number"
+                        {...register('year', {
+                            required: 'Year is required',
+                            min: { value: 1900, message: 'Year must be 1900 or later' },
+                            max: { value: new Date().getFullYear() + 1, message: 'Invalid year' }
+                        })}
+                        className={errors.year ? 'error' : ''}
+                    />
+                    {errors.year && <span className="error-message">{errors.year.message}</span>}
+                </div>
 
-                <FormButton type="submit" loading={loading}>
-                    Add Car
-                </FormButton>
-            </form>
-        </FormCard>
+                <div className="form-group">
+                    <label htmlFor="licensePlate">License Plate</label>
+                    <input
+                        id="licensePlate"
+                        type="text"
+                        {...register('licensePlate', { required: 'License plate is required' })}
+                        className={errors.licensePlate ? 'error' : ''}
+                    />
+                    {errors.licensePlate && <span className="error-message">{errors.licensePlate.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="currentMileage">Current Mileage (km)</label>
+                    <input
+                        id="currentMileage"
+                        type="number"
+                        step="0.1"
+                        {...register('currentMileage', {
+                            required: 'Current mileage is required',
+                            min: { value: 0, message: 'Mileage must be positive' }
+                        })}
+                        className={errors.currentMileage ? 'error' : ''}
+                    />
+                    {errors.currentMileage && <span className="error-message">{errors.currentMileage.message}</span>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="color">Color</label>
+                    <input
+                        id="color"
+                        type="text"
+                        {...register('color')}
+                    />
+                </div>
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="notes">Notes</label>
+                <textarea
+                    id="notes"
+                    {...register('notes')}
+                    rows="3"
+                />
+            </div>
+
+            <button 
+                type="submit" 
+                className="submit-button"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? 'Adding Car...' : 'Add Car'}
+            </button>
+        </form>
     );
 };
 
