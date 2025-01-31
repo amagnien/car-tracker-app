@@ -8,28 +8,19 @@ import {
 import { auth } from '../config/firebase';
 
 // Export the context so it can be imported directly
-export const AuthContext = createContext();
-
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Only subscribe once when component mounts
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
+        // Using the singleton auth instance
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
             setLoading(false);
         });
 
-        // Cleanup subscription on unmount
         return () => unsubscribe();
     }, []);
 
@@ -38,18 +29,16 @@ export const AuthProvider = ({ children }) => {
         loading,
         register: async (email, password) => {
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                setUser(userCredential.user);
-                return userCredential.user;
+                const { user } = await createUserWithEmailAndPassword(auth, email, password);
+                return user;
             } catch (error) {
                 throw new Error(error.message);
             }
         },
         login: async (email, password) => {
             try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                setUser(userCredential.user);
-                return userCredential.user;
+                const { user } = await signInWithEmailAndPassword(auth, email, password);
+                return user;
             } catch (error) {
                 throw new Error(error.message);
             }
@@ -57,16 +46,28 @@ export const AuthProvider = ({ children }) => {
         logout: async () => {
             try {
                 await signOut(auth);
-                setUser(null);
             } catch (error) {
                 throw new Error(error.message);
             }
         }
     };
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
+};
+
+// Custom hook for using auth context
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === null) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 }; 
