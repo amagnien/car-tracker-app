@@ -82,22 +82,6 @@ const MaintenancePage = () => {
                                                     ${record.cost.toFixed(2)}
                                                 </span>
                                             </div>
-                                            <div className="maintenance-details">
-                                                <p className="maintenance-date">
-                                                    {new Date(record.date).toLocaleDateString()}
-                                                </p>
-                                                <p className="maintenance-mileage">
-                                                    {record.mileage.toLocaleString()} km
-                                                </p>
-                                            </div>
-                                            {record.serviceProvider && (
-                                                <p className="service-provider">
-                                                    Provider: {record.serviceProvider}
-                                                </p>
-                                            )}
-                                            {record.notes && (
-                                                <p className="maintenance-notes">{record.notes}</p>
-                                            )}
                                         </div>
                                         <div className="maintenance-actions">
                                             <button
