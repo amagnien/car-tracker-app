@@ -27,6 +27,7 @@ const Navbar = () => {
                 <li><Link to="/maintenance">Maintenance</Link></li>
                 <li><Link to="/fuel">Fuel</Link></li>
                 <li><Link to="/analytics">Analytics</Link></li>
+                <li><Link to="/cars">My Cars</Link></li>
                  {user ? (
                      <>
                          <li><Link to="/settings">Settings</Link></li>

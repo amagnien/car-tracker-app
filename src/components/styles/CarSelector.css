@@ -1,0 +1,26 @@
+.car-selector {
+    margin-bottom: 20px;
+}
+
+.car-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+}
+
+.car-selector-loading,
+.car-selector-empty {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.car-selector-empty {
+    color: #dc3545;
+} 

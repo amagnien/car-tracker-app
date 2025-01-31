@@ -1,0 +1,82 @@
+.expenses-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.expenses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.expense-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.expense-info h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.expense-info p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.expense-info .date {
+    font-style: italic;
+}
+
+.expense-info .amount {
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.expense-info .category {
+    display: inline-block;
+    background-color: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+}
+
+.expense-info .notes {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #777;
+}
+
+.expense-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.no-expenses {
+    text-align: center;
+    color: #666;
+    margin-top: 40px;
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .expense-card {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .expense-actions {
+        width: 100%;
+    }
+
+    .delete-button {
+        width: 100%;
+    }
+} 
