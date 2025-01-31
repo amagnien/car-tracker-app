@@ -76,10 +76,14 @@ const MaintenancePage = () => {
                                     <div key={record.id} className="maintenance-card">
                                         <div className="maintenance-info">
                                             <div className="maintenance-header">
-                                                <h3>{record.serviceType}</h3>
+                                                <h3>{record.date}</h3>
                                                 <span className="maintenance-cost">
                                                     ${record.cost.toFixed(2)}
                                                 </span>
+                                            </div>
+                                            <div className="maintenance-details">
+                                                <p>Service: {record.service}</p>
+                                                <p>Mileage: {record.mileage} km</p>
                                             </div>
                                         </div>
                                         <div className="maintenance-actions">

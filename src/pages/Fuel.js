@@ -95,3 +95,18 @@ const FuelPage = () => {
                                             </button>
                                         </div>
                                     </div>
+                                ))
+                            )}
+                        </div>
+                    ) : (
+                        <p className="select-car-message">
+                            Please select a car to view and add fuel records.
+                        </p>
+                    )}
+                </>
+            )}
+        </div>
+    );
+};
+
+export default FuelPage;
