@@ -1,36 +1,33 @@
 // src/App.js
-import React, { Suspense } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { ToastProvider } from './contexts/ToastContext';
-import AppRoutes from './routes/AppRoutes';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
-import Toast from './components/Toast';
-import './App.css';
+import Dashboard from './pages/Dashboard';
+import FuelRecords from './pages/FuelRecords';
+import Maintenance from './pages/Maintenance';
+import Expenses from './pages/Expenses';
+import Settings from './pages/Settings';
+import { AuthProvider } from './contexts/AuthContext';
 
-// Lazy load components that aren't immediately needed
-const Dashboard = React.lazy(() => import('./pages/Dashboard'));
-const CarManagement = React.lazy(() => import('./pages/CarManagement'));
-const Analytics = React.lazy(() => import('./pages/Analytics'));
-
-const App = () => {
+function App() {
     return (
-        <Router>
-            <AuthProvider>
-                <ToastProvider>
-                    <div className="app">
-                        <Navigation />
-                        <main className="main-content">
-                            <Suspense fallback={<div>Loading...</div>}>
-                                <AppRoutes />
-                            </Suspense>
-                        </main>
-                        <Toast />
+        <AuthProvider>
+            <Router>
+                <div className="min-h-screen bg-gray-100">
+                    <Navigation />
+                    <div className="container mx-auto px-4 py-8">
+                        <Routes>
+                            <Route path="/" element={<Dashboard />} />
+                            <Route path="/fuel" element={<FuelRecords />} />
+                            <Route path="/maintenance" element={<Maintenance />} />
+                            <Route path="/expenses" element={<Expenses />} />
+                            <Route path="/settings" element={<Settings />} />
+                        </Routes>
                     </div>
-                </ToastProvider>
-            </AuthProvider>
-        </Router>
+                </div>
+            </Router>
+        </AuthProvider>
     );
-};
+}
 
 export default App;
