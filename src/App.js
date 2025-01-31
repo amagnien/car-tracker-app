@@ -1,5 +1,5 @@
 // src/App.js
-import React, { createContext, useState } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Dashboard from './pages/Dashboard';

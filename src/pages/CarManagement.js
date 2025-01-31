@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { ToastContext } from '../contexts/ToastContext';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -10,7 +10,7 @@ const CarManagement = () => {
     const [cars, setCars] = useState([]);
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
-    const { showToast } = useToast();
+    const { showToast } = useContext(ToastContext);
 
     useEffect(() => {
         if (!user?.uid) return;
