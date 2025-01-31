@@ -264,3 +264,7 @@ export const getUserCars = async (userId) => {
         throw error;
     }
 };
+
+export const getCars = async (userId) => {
+    // ... existing code ...
+};
