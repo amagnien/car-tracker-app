@@ -10,7 +10,8 @@ import {
     serverTimestamp, 
     where, 
     getDocs, 
-    getDoc 
+    getDoc, 
+    setDoc 
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -336,5 +337,21 @@ export const updateCar = async (userId, carId, updatedData) => {
         await updateDoc(carRef, updatedData);
     } catch (error) {
         throw new DataServiceError('Failed to update car', 'UPDATE_CAR_FAILED');
+    }
+};
+
+export const updateUserSettings = async (userId, settings) => {
+    try {
+        const userRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+            await updateDoc(userRef, { settings });
+        } else {
+            await setDoc(userRef, { settings });
+        }
+    } catch (error) {
+        console.error('Error updating user settings:', error);
+        throw error;
     }
 };

@@ -1,7 +1,8 @@
 // src/pages/Settings.js
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { getUserSettings, updateUserSettings } from '../services/dataService';
+import { getUserSettings } from '../services/dataService';
+import { updateUserSettings } from '../services/userService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { ToastContext } from '../contexts/ToastContext';
 
