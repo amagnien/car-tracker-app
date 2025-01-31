@@ -268,3 +268,53 @@ export const getUserCars = async (userId) => {
 export const getCars = async (userId) => {
     // ... existing code ...
 };
+
+export const getFuelRecords = (userId, carId, callback, errorCallback) => {
+    try {
+        if (!userId) throw new DataServiceError('User not authenticated', 'AUTH_REQUIRED');
+        if (!carId) throw new DataServiceError('Car ID is required', 'CAR_REQUIRED');
+        
+        const fuelCollection = collection(db, `users/${userId}/cars/${carId}/fuel`);
+        const q = query(fuelCollection, orderBy('date', 'desc'));
+        
+        return onSnapshot(q, 
+            (querySnapshot) => {
+                const fuelList = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                callback(fuelList);
+            },
+            (error) => {
+                if (errorCallback) {
+                    errorCallback(new DataServiceError('Failed to fetch fuel records', 'FETCH_FUEL_FAILED'));
+                }
+            }
+        );
+    } catch (error) {
+        if (errorCallback) {
+            errorCallback(new DataServiceError('Failed to set up fuel listener', 'LISTENER_FAILED'));
+        }
+        return () => {};
+    }
+};
+
+export const deleteFuelRecord = async (userId, carId, fuelId) => {
+    try {
+        if (!userId || !carId || !fuelId) throw new DataServiceError('Missing required parameters', 'PARAMS_REQUIRED');
+        
+        const fuelRef = doc(db, 'users', userId, 'cars', carId, 'fuel', fuelId);
+        await deleteDoc(fuelRef);
+    } catch (error) {
+        throw new DataServiceError('Failed to delete fuel record', 'DELETE_FUEL_FAILED');
+    }
+};
+
+const updateCar = async (userId, carId, updatedData) => {
+    try {
+        const carRef = doc(db, `users/${userId}/cars`, carId);
+        await updateDoc(carRef, updatedData);
+    } catch (error) {
+        throw new DataServiceError('Failed to update car', 'UPDATE_CAR_FAILED');
+    }
+};
