@@ -135,4 +135,37 @@
     .cars-grid {
         grid-template-columns: 1fr;
     }
-} 
+}
+
+.car-management {
+    padding: var(--spacing-md);
+}
+
+.cars-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+.car-card {
+    background: white;
+    padding: var(--spacing-md);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.car-card h3 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--primary-color);
+}
+
+.delete-button {
+    background-color: var(--danger-color);
+    color: white;
+    margin-top: var(--spacing-sm);
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
