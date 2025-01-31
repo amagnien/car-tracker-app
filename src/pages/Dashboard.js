@@ -30,7 +30,7 @@ const Dashboard = () => {
         const fetchCars = async () => {
             try {
                 const cars = await getCars(user.uid);
-                setCars(cars);
+                setCars(cars || []);
             } catch (error) {
                 console.error('Error fetching cars:', error);
             } finally {
