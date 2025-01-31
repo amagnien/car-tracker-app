@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../contexts/ToastContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import CarForm from '../components/CarForm';
-import { getCars, deleteCar } from '../services/dataService';
+import { getUserCars, deleteCar } from '../services/dataService';
 import '../styles/CarManagement.css';
 
 const CarManagement = () => {
@@ -15,7 +15,7 @@ const CarManagement = () => {
     useEffect(() => {
         if (!user?.uid) return;
 
-        const unsubscribe = getCars(user.uid, (fetchedCars) => {
+        const unsubscribe = getUserCars(user.uid, (fetchedCars) => {
             setCars(fetchedCars);
             setLoading(false);
         });

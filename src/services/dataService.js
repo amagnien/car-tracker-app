@@ -2,11 +2,11 @@
 import { collection, addDoc, doc, updateDoc, deleteDoc, query, onSnapshot, orderBy, serverTimestamp, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
-class DataServiceError extends Error {
-  constructor(message, code) {
-    super(message);
-    this.code = code;
-  }
+export class DataServiceError extends Error {
+    constructor(message, code) {
+        super(message);
+        this.code = code;
+    }
 }
 
 // --- Expense ---
@@ -245,6 +245,7 @@ export const addCar = async (userId, carData) => {
 export const getUserCars = (userId, callback, errorCallback) => {
     try {
         if (!userId) throw new DataServiceError('User not authenticated', 'AUTH_REQUIRED');
+        
         const carsCollection = collection(db, `users/${userId}/cars`);
         const q = query(carsCollection, orderBy('createdAt', 'desc'));
         
