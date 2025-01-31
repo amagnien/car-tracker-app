@@ -1,3 +1,2 @@
-import { ToastContext } from '../contexts/ToastContext';
-
-export { useToast } from '../contexts/ToastContext'; 
+import { useToast } from '../contexts/ToastContext';
+export default useToast; 
