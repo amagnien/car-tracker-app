@@ -254,13 +254,13 @@ export const deleteFuel = async (userId, carId, fuelId) => {
     }
 };
 
-export const getCars = async (userId) => {
+export const getUserCars = async (userId) => {
     try {
         const carsRef = collection(db, 'users', userId, 'cars');
         const snapshot = await getDocs(carsRef);
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
-        console.error('Error fetching cars:', error);
+        console.error('Error fetching user cars:', error);
         throw error;
     }
 };
