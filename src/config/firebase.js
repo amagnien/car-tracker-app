@@ -1,6 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+
+let app;
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -12,13 +14,17 @@ const firebaseConfig = {
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase only if it hasn't been initialized yet
+if (!app) {
+    try {
+        app = initializeApp(firebaseConfig);
+    } catch (error) {
+        if (!/already exists/.test(error.message)) {
+            console.error('Firebase initialization error', error.stack);
+        }
+    }
+}
 
-// Initialize Firestore
-export const db = getFirestore(app);
-
-// Initialize Auth
 export const auth = getAuth(app);
-
-export default app; 
+export const db = getFirestore(app);
+export default app;
