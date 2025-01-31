@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import ExpenseForm from '../components/ExpenseForm';
 import { getExpenses, deleteExpense } from "../services/dataService";
 import { useAuth } from '../hooks/useAuth';
-import { ToastContext } from '../App';
+import { ToastContext } from '../contexts/ToastContext';
 import CarSelector from '../components/CarSelector';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/Expenses.css';
