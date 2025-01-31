@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getCars, getRecentFuel, getRecentMaintenance, getRecentExpenses, getExpenses } from '../services/dataService';
+import { getUserCars, getRecentFuel, getRecentMaintenance, getRecentExpenses, getExpenses } from '../services/dataService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DashboardStats from '../components/DashboardStats';
 import DashboardCharts from '../components/DashboardCharts';
