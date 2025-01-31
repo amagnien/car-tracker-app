@@ -8,6 +8,7 @@ import Expenses from './pages/Expenses';
 import Settings from './pages/Settings';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
+import Toast from './components/Toast';
 import './App.css';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
                                 <Route path="/settings" element={<Settings />} />
                             </Routes>
                         </div>
+                        <Toast />
                     </div>
                 </Router>
             </ToastProvider>
