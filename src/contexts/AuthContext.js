@@ -7,7 +7,8 @@ import {
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
-const AuthContext = createContext();
+// Export the context so it can be imported directly
+export const AuthContext = createContext();
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
@@ -32,41 +33,35 @@ export const AuthProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
-    const register = async (email, password) => {
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            setUser(userCredential.user);
-            return userCredential.user;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    };
-
-    const login = async (email, password) => {
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            setUser(userCredential.user);
-            return userCredential.user;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    };
-
-    const logout = async () => {
-        try {
-            await signOut(auth);
-            setUser(null);
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    };
-
     const value = {
         user,
         loading,
-        register,
-        login,
-        logout
+        register: async (email, password) => {
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                setUser(userCredential.user);
+                return userCredential.user;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        },
+        login: async (email, password) => {
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                setUser(userCredential.user);
+                return userCredential.user;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        },
+        logout: async () => {
+            try {
+                await signOut(auth);
+                setUser(null);
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        }
     };
 
     return (
