@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getCars, getRecentFuel, getRecentMaintenance, getRecentExpenses } from '../services/dataService';
+import { getCars, getRecentFuel, getRecentMaintenance, getRecentExpenses, getExpenses } from '../services/dataService';
 import LoadingSpinner from '../components/LoadingSpinner';
+import DashboardStats from '../components/DashboardStats';
+import DashboardCharts from '../components/DashboardCharts';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -12,6 +14,14 @@ const Dashboard = () => {
     const [recentExpenses, setRecentExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const { userId } = useAuth();
+    const [stats, setStats] = useState({
+        totalExpenses: 0,
+        expensesTrend: 0,
+        avgFuelEfficiency: 0,
+        fuelEfficiencyTrend: 0,
+        nextService: 5000,
+        nextServiceCar: 'No cars registered'
+    });
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -24,8 +34,23 @@ const Dashboard = () => {
                     setLoading(false);
                 });
 
+                // Fetch expenses and calculate stats
+                const unsubscribeExpenses = getExpenses(userId, null, (expenses) => {
+                    if (expenses) {
+                        // Calculate stats from expenses
+                        const total = expenses.reduce((acc, exp) => acc + exp.amount, 0);
+                        
+                        setStats(prev => ({
+                            ...prev,
+                            totalExpenses: total,
+                            // Add other calculations as needed
+                        }));
+                    }
+                });
+
                 return () => {
                     unsubscribeCars();
+                    unsubscribeExpenses();
                 };
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
@@ -48,6 +73,9 @@ const Dashboard = () => {
                     Add New Car
                 </Link>
             </header>
+
+            <DashboardStats stats={stats} />
+            <DashboardCharts />
 
             <div className="dashboard-stats grid grid-cols-4">
                 <div className="stat-card">

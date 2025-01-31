@@ -1,0 +1,87 @@
+.expense-list {
+    padding: var(--spacing-md);
+}
+
+.expense-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.expense-card {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-normal);
+}
+
+.expense-card:hover {
+    transform: translateY(-2px);
+}
+
+.expense-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.expense-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+}
+
+.expense-amount {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: var(--font-size-lg);
+}
+
+.expense-details {
+    margin-bottom: var(--spacing-md);
+}
+
+.expense-date {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.expense-category {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.expense-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}
+
+.delete-button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.delete-button:hover {
+    background-color: var(--danger-dark);
+}
+
+.no-expenses {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: var(--spacing-xl);
+}
+
+@media (max-width: 768px) {
+    .expense-grid {
+        grid-template-columns: 1fr;
+    }
+} 
