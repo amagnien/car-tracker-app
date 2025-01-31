@@ -175,6 +175,16 @@ export const updateMaintenance = async (userId, carId, maintenanceId, updatedDat
     }
 };
 
+export const addMaintenanceRecord = async (userId, carId, maintenanceData) => {
+    try {
+        const maintenanceRef = collection(db, 'users', userId, 'cars', carId, 'maintenance');
+        await addDoc(maintenanceRef, maintenanceData);
+    } catch (error) {
+        console.error('Error adding maintenance record:', error);
+        throw error;
+    }
+};
+
 // --- Fuel ---
 
 export const addFuel = async (userId, carId, fuelData) => {
