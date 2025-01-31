@@ -217,33 +217,7 @@ export const addFuel = async (userId, carId, fuelData) => {
 };
 
 export const getFuel = (userId, carId, callback, errorCallback) => {
-    try {
-        if (!userId) throw new DataServiceError('User not authenticated', 'AUTH_REQUIRED');
-        if (!carId) throw new DataServiceError('Car ID is required', 'CAR_REQUIRED');
-        
-        const fuelCollection = collection(db, `users/${userId}/cars/${carId}/fuel`);
-        const q = query(fuelCollection, orderBy('date', 'desc'));
-        
-        return onSnapshot(q, 
-            (querySnapshot) => {
-                const fuelList = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                callback(fuelList);
-            },
-            (error) => {
-                if (errorCallback) {
-                    errorCallback(new DataServiceError('Failed to fetch fuel records', 'FETCH_FUEL_FAILED'));
-                }
-            }
-        );
-    } catch (error) {
-        if (errorCallback) {
-            errorCallback(new DataServiceError('Failed to set up fuel listener', 'LISTENER_FAILED'));
-        }
-        return () => {};
-    }
+    return fetchCollection(userId, carId, 'fuel', callback, errorCallback);
 };
 
 export const deleteFuel = async (userId, carId, fuelId) => {
