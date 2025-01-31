@@ -8,41 +8,33 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/Maintenance.css';
 
 const MaintenancePage = () => {
-    const [maintenance, setMaintenance] = useState([]);
+    const [maintenanceRecords, setMaintenanceRecords] = useState([]);
     const [selectedCarId, setSelectedCarId] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { userId } = useAuth();
     const { showToast } = useContext(ToastContext);
 
     useEffect(() => {
-        let unsubscribe = () => {};
+        if (!userId || !selectedCarId) return;
 
-        if (userId && selectedCarId) {
-            setLoading(true);
-            unsubscribe = getMaintenance(
-                userId,
-                selectedCarId,
-                (maintenanceList) => {
-                    setMaintenance(maintenanceList);
-                    setLoading(false);
-                },
-                (error) => {
-                    console.error('Error fetching maintenance records:', error);
-                    showToast('Error loading maintenance records', 'error');
-                    setLoading(false);
-                }
-            );
-        } else {
-            setMaintenance([]);
-            setLoading(false);
-        }
+        const unsubscribe = getMaintenance(userId, selectedCarId, 
+            (records) => {
+                setMaintenanceRecords(records);
+                setLoading(false);
+            },
+            (error) => {
+                console.error('Error fetching maintenance records:', error);
+                showToast('Error loading maintenance records', 'error');
+                setLoading(false);
+            }
+        );
 
         return () => unsubscribe();
     }, [userId, selectedCarId, showToast]);
 
-    const handleDeleteMaintenance = async (maintenanceId) => {
+    const handleDeleteMaintenanceRecord = async (recordId) => {
         try {
-            await deleteMaintenance(userId, selectedCarId, maintenanceId);
+            await deleteMaintenance(userId, selectedCarId, recordId);
             showToast('Maintenance record deleted successfully', 'success');
         } catch (error) {
             console.error('Error deleting maintenance record:', error);
@@ -69,10 +61,10 @@ const MaintenancePage = () => {
                 <>
                     {selectedCarId ? (
                         <div className="maintenance-list">
-                            {maintenance.length === 0 ? (
+                            {maintenanceRecords.length === 0 ? (
                                 <p className="no-maintenance">No maintenance records yet.</p>
                             ) : (
-                                maintenance.map(record => (
+                                maintenanceRecords.map(record => (
                                     <div key={record.id} className="maintenance-card">
                                         <div className="maintenance-info">
                                             <div className="maintenance-header">
@@ -89,7 +81,7 @@ const MaintenancePage = () => {
                                         <div className="maintenance-actions">
                                             <button
                                                 className="button button-danger"
-                                                onClick={() => handleDeleteMaintenance(record.id)}
+                                                onClick={() => handleDeleteMaintenanceRecord(record.id)}
                                             >
                                                 Delete
                                             </button>
