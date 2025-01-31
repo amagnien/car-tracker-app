@@ -1,49 +1,81 @@
 // src/components/Navbar.js
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { logoutUser } from '../services/auth';
+import './styles/Navbar.css';
 
 const Navbar = () => {
-    const { user, setUser } = useAuth(); // Removed unused 'userId'
-    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+    const location = useLocation();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const handleLogout = async () => {
-      try {
-        await logoutUser();
-        setUser(null);
-        navigate('/login');
-      } catch (error) {
-        console.error("Error logging out:", error);
-      }
-    };
+    const navLinks = [
+        { path: '/', label: 'Dashboard' },
+        { path: '/cars', label: 'My Cars' },
+        { path: '/expenses', label: 'Expenses' },
+        { path: '/maintenance', label: 'Maintenance' },
+        { path: '/fuel', label: 'Fuel' },
+        { path: '/analytics', label: 'Analytics' }
+    ];
+
+    const isActive = (path) => location.pathname === path;
 
     return (
         <nav className="navbar">
-          <div className="container">
-            <Link to="/" className="navbar-brand">Car Tracker</Link>
-            <ul className="navbar-nav">
-                <li><Link to="/expenses">Expenses</Link></li>
-                <li><Link to="/maintenance">Maintenance</Link></li>
-                <li><Link to="/fuel">Fuel</Link></li>
-                <li><Link to="/analytics">Analytics</Link></li>
-                 {user ? (
-                     <>
-                         <li><Link to="/settings">Settings</Link></li>
-                         <li>
-                             <button onClick={handleLogout} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer', color: 'white' }}>
-                                 Logout
-                             </button>
-                         </li>
-                     </>
-                 ) : (
-                   <>
-                    <li><Link to="/login">Login</Link></li>
-                    <li><Link to="/signup">Sign Up</Link></li>
-                   </>
-                 )}
-            </ul>
-          </div>
+            <div className="navbar-container">
+                <Link to="/" className="navbar-brand">
+                    <span className="brand-icon">🚗</span>
+                    <span className="brand-text">CarTracker</span>
+                </Link>
+
+                <button 
+                    className="mobile-menu-button"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label="Toggle menu"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <div className={`navbar-menu ${isMenuOpen ? 'is-open' : ''}`}>
+                    <div className="nav-links">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    <div className="nav-auth">
+                        {user ? (
+                            <div className="user-menu">
+                                <span className="user-email">{user.email}</span>
+                                <button 
+                                    className="button button-secondary"
+                                    onClick={logout}
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="auth-buttons">
+                                <Link to="/login" className="button button-primary">
+                                    Login
+                                </Link>
+                                <Link to="/signup" className="button button-secondary">
+                                    Sign Up
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
         </nav>
     );
 };
