@@ -1,5 +1,5 @@
 // src/services/dataService.js
-import { collection, addDoc, doc, updateDoc, deleteDoc, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, deleteDoc, query, onSnapshot, orderBy, where, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 
 class DataServiceError extends Error {
@@ -258,5 +258,109 @@ export const updateCar = async (userId, carId, carData) => {
         });
     } catch (error) {
         throw new DataServiceError('Failed to update car', 'UPDATE_CAR_FAILED');
+    }
+};
+
+// Fuel Records
+export const getFuelRecords = (userId, carId, onSuccess, onError) => {
+    try {
+        const fuelRef = collection(db, 'users', userId, 'cars', carId, 'fuelRecords');
+        const q = query(fuelRef, orderBy('date', 'desc'));
+
+        return onSnapshot(q, 
+            (snapshot) => {
+                const records = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    date: doc.data().date?.toDate?.() || doc.data().date
+                }));
+                onSuccess(records);
+            },
+            (error) => {
+                console.error('Error fetching fuel records:', error);
+                if (onError) onError(error);
+            }
+        );
+    } catch (error) {
+        console.error('Error setting up fuel records listener:', error);
+        if (onError) onError(error);
+        return () => {};
+    }
+};
+
+export const addFuelRecord = async (data, userId) => {
+    try {
+        const fuelRef = collection(db, 'users', userId, 'cars', data.carId, 'fuelRecords');
+        const docRef = await addDoc(fuelRef, {
+            ...data,
+            date: new Date(data.date),
+            timestamp: serverTimestamp()
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error('Error adding fuel record:', error);
+        throw error;
+    }
+};
+
+export const deleteFuelRecord = async (userId, carId, recordId) => {
+    try {
+        const recordRef = doc(db, 'users', userId, 'cars', carId, 'fuelRecords', recordId);
+        await deleteDoc(recordRef);
+    } catch (error) {
+        console.error('Error deleting fuel record:', error);
+        throw error;
+    }
+};
+
+// Maintenance Records
+export const getMaintenanceRecords = (userId, carId, onSuccess, onError) => {
+    try {
+        const maintenanceRef = collection(db, 'users', userId, 'cars', carId, 'maintenance');
+        const q = query(maintenanceRef, orderBy('date', 'desc'));
+
+        return onSnapshot(q,
+            (snapshot) => {
+                const records = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    date: doc.data().date?.toDate?.() || doc.data().date
+                }));
+                onSuccess(records);
+            },
+            (error) => {
+                console.error('Error fetching maintenance records:', error);
+                if (onError) onError(error);
+            }
+        );
+    } catch (error) {
+        console.error('Error setting up maintenance records listener:', error);
+        if (onError) onError(error);
+        return () => {};
+    }
+};
+
+export const addMaintenanceRecord = async (data, userId) => {
+    try {
+        const maintenanceRef = collection(db, 'users', userId, 'cars', data.carId, 'maintenance');
+        const docRef = await addDoc(maintenanceRef, {
+            ...data,
+            date: new Date(data.date),
+            timestamp: serverTimestamp()
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error('Error adding maintenance record:', error);
+        throw error;
+    }
+};
+
+export const deleteMaintenanceRecord = async (userId, carId, recordId) => {
+    try {
+        const recordRef = doc(db, 'users', userId, 'cars', carId, 'maintenance', recordId);
+        await deleteDoc(recordRef);
+    } catch (error) {
+        console.error('Error deleting maintenance record:', error);
+        throw error;
     }
 };
