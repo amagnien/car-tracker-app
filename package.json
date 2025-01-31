@@ -15,7 +15,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.2",
     "react-router-dom": "^6.21.1",
-    "react-scripts": "^5.0.1",
+    "react-scripts": "latest",
     "recharts": "^2.10.3",
     "web-vitals": "^2.1.4"
   },
@@ -29,7 +29,7 @@
     "eject": "react-scripts eject",
     "clean": "rm -rf node_modules package-lock.json build",
     "reinstall": "npm run clean && npm install",
-    "prebuild": "npm install",
+    "prebuild": "npm cache clean --force && rm -rf node_modules package-lock.json && npm install",
     "postinstall": "npm install recharts@2.10.3 --legacy-peer-deps"
   },
   "eslintConfig": {
