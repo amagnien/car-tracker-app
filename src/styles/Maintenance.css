@@ -1,0 +1,110 @@
+.maintenance-page {
+    padding: var(--spacing-lg);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.maintenance-list {
+    display: grid;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+.maintenance-card {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    transition: transform var(--transition-normal);
+}
+
+.maintenance-card:hover {
+    transform: translateY(-2px);
+}
+
+.maintenance-info {
+    flex: 1;
+}
+
+.maintenance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.maintenance-header h3 {
+    color: var(--text-primary);
+    margin: 0;
+    font-size: var(--font-size-lg);
+}
+
+.maintenance-cost {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+}
+
+.maintenance-details {
+    display: flex;
+    gap: var(--spacing-md);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.service-provider {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.maintenance-notes {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border-color);
+}
+
+.maintenance-actions {
+    margin-left: var(--spacing-md);
+}
+
+.no-maintenance,
+.select-car-message {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: var(--spacing-xl);
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+    .maintenance-page {
+        padding: var(--spacing-md);
+    }
+
+    .maintenance-card {
+        flex-direction: column;
+    }
+
+    .maintenance-actions {
+        margin-left: 0;
+        margin-top: var(--spacing-md);
+        width: 100%;
+    }
+
+    .maintenance-actions button {
+        width: 100%;
+    }
+
+    .maintenance-details {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+} 
